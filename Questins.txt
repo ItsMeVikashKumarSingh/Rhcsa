@@ -1,0 +1,190 @@
+Q.1  setup an IP adress for primary virtual machine ?
+
+Given:- ip address 172.25.x.11 subnetmask 255.255.255.0 default gateway 172.25.25.254.254 and hostname as primary.net.example.com
+
+Ans:- for this question we need to use graphicaly methad after set all information manualy remmeber that we sholud off automatic every where and in the end we need to trun off and than on the internet.
+
+ifconfig 
+ip addr //both for ip check
+
+hostname // for check hostname
+hostnamectl set-hostname 'hostname' 	->>for set hostname
+
+
+
+
+
+Q.2 Yum reposetry configration on both machine
+
+Ans:- first we  need to make a directory in root path 
+mkdir "dir_name" // to make directory
+
+//we need to mount iso file for this go to setting->storage>empty->click on disk i right side->select iso file->ok
+
+now we need to mount this disk
+lsblk / for see the disk mount or not if mount than it show in the last at sr0
+
+now we need to mount is at specific path
+mount /dev/sr0 /mnt // for mount disk at /mnt path
+
+vim /etc/yum.repos.d/"dir_name.repo // to open repo file it is mandatory to same name to dir and repo file
+ we need to edit this file by following this commands
+//we need to press i in go for insert mod in editor
+[AppStream]
+name=AppStream
+baseurl = file:///mnt/AppStream
+gpgcheck=0
+enabled=1
+
+[BaseOS]
+name=BaseOS
+baseurl = file:///mnt/BaseOS
+gpgcheck=0
+enabled=1
+
+then for save it we need to press esc->:->w->q->!->enter // it show in the left bottom corner :wq! then enter
+yum repoinfo //for config repo file inn exam we need to run only repoinfo do not use yum before repoinfo
+
+
+
+
+Q.3 for change port of httpd
+
+yum install httpd -y //for install httpd
+than we need a comman 
+semanage  port -a -t http port t -p tcp port "port_number" // we can also access it in simple way by following steps
+//1. man semanage port //open manual of semanage port
+//2. shift+g // to go in the end
+//3. where you found that command then copy the commnad and paste in the shell and edit port number in the end
+
+systemctl restart httpd // for restart httpd service 
+systemctl enable --now httpd // for enable/restart httpd service 
+
+systemctl status htppd // to check the status of httpd
+
+
+
+
+
+Q.4 configure a cronjob on primary machine
+
+Ans. crontab -e // to enter editor of crontab for root user or primary machine
+     crontab -eu "username"// to enter editor of specific user
+
+in editor sequence of column are following 
+syntax minutes hours dayofmonth monthofyear dayofweek command
+		5    7     5         *             */3      echo hellow      // here are * means every monnth of year and */3 means every 3 day of week
+
+NOTE:- we should not enter syntex in editor 
+now save file and can check cron job
+crontab -l -u "username" 
+
+
+
+
+Q5. Create the following users,groups,and group membership:-
+
+Ans:- A group named sysadmin. A user Natasha who belongs to sysadmin as asecondry group. A user Sarah who also belongs to sysadmin as a secondry group. A user Harry who does not have access to an intractive shell on the system, and who is not a member of sysadmin. Natasha and Harry should all have the password of atenorth.
+
+groupadd sysadmin
+useradd -G sysadmin natasha // -G for secoudry group and -g for primary group
+useradd -G sysadmin sarah  //
+useradd -s /sbin/nologin "username"  //for user add without give login credentials //s stands for shell
+usermod -s /sbin/nologin "username" //for modification of user to remove login credentials
+usermod -s /bin/bash "username" //for modification of user to give login credentials
+passwd "username"
+
+passwd "sarah"
+passwd "harry"
+
+ctrl+d  //for logout 
+we can also type logout //for logout
+
+user_name:password:uid:dir // in passwd file save information of users in this syntex
+NOTE:- information of users save in /etc/passwd file
+information of group save in /etc/group file
+
+cat "file_name" // for read filevalues without open that
+example:- cat /etc/group //to show information ogf groups
+
+
+
+
+
+Q6. Create a collaborative direction "/common/admin" with the following characteristcs:
+Ans:-	 Group ownership if /common/admin is sysadmin. The directory should br readable,writable, and accessible to members of sysadmin, but not to any other user (it is understood thtroot has access to all files and directions on the system.) Files created in/common/admin automatically have group ownership set to the sysadmin group.
+
+mkdir -p /common/admin  //-p for parent directery
+chgrp "groupname" "path" //for for change group owner
+example :- chgrp sysadmin /common/admin 
+chmod "permission" "path" // for modification in permisiion of group
+example :- chmod 2770 /common/admin  
+setfacl -m g:"groupname":"permission" "path"  //-m for modification; g for group;
+example:- setfacl -m:sysadmin:rwx /cpmmon/admin/
+
+facl //used for gives permission for specific user
+
+
+
+
+
+Q.7 -->> Configure NTP in your system so that it is an NTP client of classroom.example.com ?
+ntp pacage name crony
+Ans :-   vim /etc/chrony.conf // it is a file where save 
+commant line which statart from pool ///comment this line and add following line
+server "server_name" iburst
+savefile 
+systemctl restart chronyd // d for demoan  
+chrony sources -v  [for check]
+
+
+*****************find use for find file and greb use for find string ************************
+
+Q.8 Find the files in your system which is owned by simone user & copy all files on /root/found directory?
+mkdir /root/found
+find / -user simone -exec -a cp -rvf {} /root/found \; //here ; is also include in command //-r for recursive; v for vervoves means it shoe files that are oprate are showen on screen; -a for also copy files permisiions etc; {} stands for encloes all files  in given directory;
+
+
+
+
+
+Q.9 	->> Find the string "strato" from /usr/share/dict/word/file and save the result in searchfile
+
+grep "string" "pathoffile" //for find the string in given file
+example:- grep strato /user/share/dict/words
+grep "string" "pathoffile" > "found file" // found file stands for a file where we want to store output
+example:- grep strato /user/share/dict/words > /searchfile  			//grep for find string; strato is a string; 
+
+Q.10 :- Create a user barry user id of the user is 2112 and set it's pass atenorth
+
+useradd "uid" "username"
+example:- useradd 2112 barry
+passwd "password"
+example: - passwd atenorth
+
+
+Q.11 using automounter service mount remoteuserX onto the provider folder /our/remoteuserX
+
+
+
+Q.12 sudo privillege a group name is 'elite' they have to give administrative permission without password?
+
+
+Q.13 simple shell script 
+write a script mysearch to list the contents of /users that are smaller 10MB and get group id (SGID) permission the script should be present in  /usr/local/bin After  exect on, the script should automatically write all the lines and save it to /root/lines
+
+find /usr/ -size -10M  //for find all files smaller than 10mb in given dir //-size opetion used to constraints of size
+touch /root/lines //by this a file made by name lines
+find /usr/ -size -10M -perm /g=s > /root/lines  // it store all output in /root/lines file
+
+
+
+Q.14Build Application 
+-build an apllication testapp that priint the message when user1 loggend in "welcome to user1"
+
+
+
+
+
+
+
